@@ -2,7 +2,6 @@ import os
 import pickle
 from torch.utils.data import Dataset
 
-
 class dataset(Dataset):
     def __init__(self,path):
 

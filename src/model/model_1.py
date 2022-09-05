@@ -39,11 +39,11 @@ y = dataset["S4"]["label"] # labels
 ## visualise
 
 # legend 
-legend_elements = [Line2D([0],[0],marker=".",markerfacecolor="black",markersize=15,color="w",label="transient"),
-                   Line2D([0],[0],marker=".",markerfacecolor="green",markersize=15,color="w",label="baseline"),
-                   Line2D([0],[0],marker=".",markerfacecolor="red",markersize=15,color="w",label="stress"),
-                   Line2D([0],[0],marker=".",markerfacecolor="blue",markersize=15,color="w",label="amusement"),
-                   Line2D([0],[0],marker=".",markerfacecolor="orange",markersize=15,color="w",label="meditation")]
+legend_elements = [Line2D([0],[0],marker=".",markerfacecolor="black",markersize=15,color="w",label="Transient"),
+                   Line2D([0],[0],marker=".",markerfacecolor="green",markersize=15,color="w",label="Baseline"),
+                   Line2D([0],[0],marker=".",markerfacecolor="red",markersize=15,color="w",label="Stress"),
+                   Line2D([0],[0],marker=".",markerfacecolor="blue",markersize=15,color="w",label="Amusement"),
+                   Line2D([0],[0],marker=".",markerfacecolor="orange",markersize=15,color="w",label="Meditation")]
 
 # function for plotting according to labels
 def pltcolour(lst):
@@ -87,6 +87,9 @@ ax2.legend(handles=legend_elements,loc="upper right")
 ax3.legend(handles=legend_elements,loc="upper right")
 plt.show()
 
+# extra
+plt.plot(t,BVP[0:n])
+plt.show()
 
 
 

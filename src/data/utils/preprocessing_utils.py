@@ -1,5 +1,9 @@
 import numpy as np 
+import scipy
 from scipy import signal
+from scipy import stats
+from sklearn import metrics
+import statsmodels.api as sm
 
 # helper function for Butterworth filter
 def extract_coefficients(p, degree):
@@ -70,13 +74,118 @@ def Butter_self(X,order,cut_off,fs):
 
     return Y
 
+# t = np.linspace(0, 1, 1000, False)  # 1 second
+# sig = np.sin(2*np.pi*10*t) + np.sin(2*np.pi*20*t)
 
-t = np.linspace(0, 1, 1000, False)  # 1 second
-sig = np.sin(2*np.pi*10*t) + np.sin(2*np.pi*20*t)
-
-b,a = signal.butter(N=2, Wn=2, fs=1000)
-filtered = signal.lfilter(b,a,sig)
-filtered1 = Butter_self(sig,2,2,1000)
+# b,a = signal.butter(N=2, Wn=2, fs=1000)
+# filtered = signal.lfilter(b,a,sig)
+# filtered1 = Butter_self(sig,2,2,1000)
 
 
 #print(sum(filtered-filtered1))
+
+
+def slope_features(X,window_size,window_shift,fs):
+
+    # initialise memory
+    slope = []
+
+    # calculate number of points from specified frequency
+    window_size = window_size * fs 
+    window_shift = window_shift * fs 
+
+    # find indices 
+    indices = np.arange(len(X))
+
+    # compute all windows 
+    windows = [indices[i:i+window_size] for i in range(0,len(X),window_size-window_shift)]
+
+    # compute slope for each window and append to list
+    for i in range(len(windows)):
+        y2 = np.max(X[windows[i]])
+        y1 = np.min(X[windows[i]])
+        x2 = X[windows[i][len(X[windows[i]])-1]]
+        x1 = X[windows[i][0]]
+        slope.append((y2-y1)/(x2-x1))
+    
+    return {"max": max(slope), "min": min(slope),"avg": sum(slope)/len(slope)}
+
+
+#slope_feat = slope_features(np.arange(40),5,1,1)
+#print(slope_feat)
+
+def stat_features(X,window_size,window_shift,fs):
+    
+    # initialise memory
+    mean = []
+    median = []
+    std = []
+    skewness = []
+    kurtosis = []
+    min_ = []
+    max_ = []
+    entropy = []
+
+    # calculate number of points from specified frequency
+    window_size = window_size * fs 
+    window_shift = window_shift * fs 
+
+    # find indices 
+    indices = np.arange(len(X))
+
+    # compute all windows 
+    windows = [indices[i:i+window_size] for i in range(0,len(X),window_size-window_shift)]
+
+    # compute statistics for each window and append to list
+    for i in range(len(windows)):
+        temp = X[windows[i]]
+        mean.append(np.mean(temp))
+        median.append(np.median(temp))
+        std.append(np.std(temp))
+        skewness.append(scipy.stats.skew(temp))
+        kurtosis.append(scipy.stats.kurtosis(temp))
+        min_.append(np.min(temp))
+        max_.append(np.max(temp)) 
+        entropy.append(scipy.stats.entropy(temp))
+        
+    return {"max mean": max(mean), "min mean": min(mean), "avg mean": sum(mean)/len(mean),
+            "max median": max(median), "min median": min(median), "avg median": sum(median)/len(median),
+            "max std": max(std), "min std": min(std), "avg std": sum(std)/len(std),
+            "max skewness": max(skewness), "min skewness": min(skewness), "avg skewness": sum(skewness)/len(skewness),
+            "max kurtosis": max(kurtosis), "min kurtosis": min(kurtosis), "avg kurtosis": sum(kurtosis)/len(kurtosis),
+            "avg min": sum(min_)/len(min_),"avg max": sum(max_)/len(max_), "min entropy": min(entropy),
+            "max entropy": max(entropy), "avg entropy": sum(entropy)/len(entropy)}
+
+# stat_feat = stat_features(np.arange(40),5,1,1)
+# print(stat_feat)
+
+def extra_features(X,window_size,window_shift,fs):
+
+    # initialise memory
+    gradient = []
+    Fourier_coeff = []
+    auto_corr = [] 
+
+    # calculate number of points from specified frequency
+    window_size = window_size * fs 
+    window_shift = window_shift * fs 
+
+    # find indices 
+    indices = np.arange(len(X))
+
+    # compute all windows 
+    windows = [indices[i:i+window_size] for i in range(0,len(X),window_size-window_shift)]
+
+    # compute features for each window and append to list
+    for i in range(len(windows)):
+        temp = X[windows[i]]
+        gradient.append(np.gradient(temp)) # note: numpy uses "complex" finite difference method
+        auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
+        
+        # compute Fourier coefficients
+        
+        
+        Fourier.coeff.append() 
+
+
+    return 

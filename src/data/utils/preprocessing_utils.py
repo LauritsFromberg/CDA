@@ -1,8 +1,8 @@
 import numpy as np 
 import scipy
 from scipy import signal
-from scipy import stats
-from sklearn import metrics
+from scipy import stats as stats
+from scipy import integrate as int
 import statsmodels.api as sm
 
 # helper function for Butterworth filter
@@ -142,11 +142,11 @@ def stat_features(X,window_size,window_shift,fs):
         mean.append(np.mean(temp))
         median.append(np.median(temp))
         std.append(np.std(temp))
-        skewness.append(scipy.stats.skew(temp))
-        kurtosis.append(scipy.stats.kurtosis(temp))
+        skewness.append(stats.skew(temp))
+        kurtosis.append(stats.kurtosis(temp))
         min_.append(np.min(temp))
         max_.append(np.max(temp)) 
-        entropy.append(scipy.stats.entropy(temp))
+        entropy.append(stats.entropy(temp))
         
     return {"max mean": max(mean), "min mean": min(mean), "avg mean": sum(mean)/len(mean),
             "max median": max(median), "min median": min(median), "avg median": sum(median)/len(median),
@@ -162,9 +162,9 @@ def stat_features(X,window_size,window_shift,fs):
 def extra_features(X,window_size,window_shift,fs):
 
     # initialise memory
-    gradient = []
-    Fourier_coeff = []
-    auto_corr = [] 
+    avg_gradient = []
+    avg_auto_corr = [] 
+    abs_int = []
 
     # calculate number of points from specified frequency
     window_size = window_size * fs 
@@ -179,13 +179,13 @@ def extra_features(X,window_size,window_shift,fs):
     # compute features for each window and append to list
     for i in range(len(windows)):
         temp = X[windows[i]]
-        gradient.append(np.gradient(temp)) # note: numpy uses "complex" finite difference method
-        auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
-        
-        # compute Fourier coefficients
-        
-        
-        Fourier.coeff.append() 
+        avg_gradient.append(np.mean(np.gradient(temp))) # note: numpy uses "complex" finite difference method
+        avg_auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
+        abs_int.append(abs(int.simpson(temp,windows[i]))) # absolute integral
 
+    return {"max avg_gradient": max(avg_gradient),"min avg_gradient": min(avg_gradient), "avg avg_gradient": sum(avg_gradient)/len(avg_gradient),
+            "max avg_auto_corr": max(avg_auto_corr), "min avg_auto_corr": min(avg_auto_corr), "avg avg_auto_corr": sum(avg_auto_corr)/len(avg_auto_corr),
+            "max absolute integral": max(abs_int), "min absolute integral": min(abs_int), "avg absolute integral": sum(abs_int)/len(abs_int)}
 
-    return 
+# stat_feat = extra_features(np.arange(40),5,1,1)
+# print(stat_feat)

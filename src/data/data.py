@@ -7,7 +7,7 @@ import pandas as pd
 
 ## load data
 
-# empty dictionary
+# empty dictionaries
 dataset_temp = {}
 dataset = {}
 quest_temp = {}
@@ -19,7 +19,7 @@ vers2 = ["S2","S3","S6","S9","S11","S14","S16"]
 # emotional states (versions of study-protocol)
 cond = ["base","stress","amusement","meditation_1","mediation_2"]
 cond1 = ["base","amusement","meditation_1","stress","meditation_2"]
-cond2 = ["base","stress","meditation_1","amustement","meditation_2"]
+cond2 = ["base","stress","meditation_1","amusement","meditation_2"]
 
 # define path 
 path = "C:/Users/Bruger/Documents/CDA/CDA/data/open/WESAD"
@@ -33,29 +33,29 @@ Wn = 2 * 2.5 / fs # critical frequency of filter
 for folder,sub_folders,files in os.walk(path):
     for name in files[::-1]:
         # load questions
-        if name.endswith("_quest.csv"): # find csv files
-            df = pd.read_csv(os.path.join(folder,name),sep=";") # read into dataframe
+        if name.endswith("_quest.csv"): # find desired csv files
+            df = pd.read_csv(os.path.join(folder,name),sep=";") # load into dataframe
             if str(name).rsplit(".",1)[0].rsplit("_",1)[0] in vers1: # version 1 of study-protocol
                 count = 0
                 for i in cond1:
                     df_val = df.values.tolist() # get values
                     # special case
                     if i == "stress":
-                        quest_temp[i] = {"Panas": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3]}
+                        quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3]}
                         count += 1
                     else:   
-                        quest_temp[i] = {"Panas": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3],"SSSQ":df_val[22][1:6]}
+                        quest_temp[i] = {"PANAS": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3],"SSSQ":df_val[22][1:6]}
                         count += 1     
                 quest[str(name).rsplit(".",1)[0].rsplit("_",1)[0]] = quest_temp # add to nested dictionary
-            else:
+            else: # version 2 of study-protocol
                 count = 0
                 for i in cond2:
                     df_val = df.values.tolist() 
                     if i == "stress": 
-                        quest_temp[i] = {"Panas": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3],"SSSQ":df_val[22][1:6]}
+                        quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3],"SSSQ":df_val[22][1:6]}
                         count += 1
                     else:   
-                        quest_temp[i] = {"Panas": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3]}
+                        quest_temp[i] = {"PANAS": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16][1:3]}
                         count += 1
                 quest[str(name).rsplit(".",1)[0].rsplit("_",1)[0]] = quest_temp 
 
@@ -140,4 +140,5 @@ for folder,sub_folders,files in os.walk(path):
                             # np.hstack().tolist() # virker, (gør ik for acc, eventuelt bare fjern acc)
 
                 dataset[str(name).rsplit(".",1)[0]] = dataset_temp # add to nested dictionary
-print(dataset,quest)
+
+print(*quest["S7"]["meditation_2"].values())

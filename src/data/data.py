@@ -140,5 +140,4 @@ for folder,sub_folders,files in os.walk(path):
                             # np.hstack().tolist() # virker, (gør ik for acc, eventuelt bare fjern acc)
 
                 dataset[str(name).rsplit(".",1)[0]] = dataset_temp # add to nested dictionary
-
-print(*quest["S7"]["meditation_2"].values())
+print(dataset)

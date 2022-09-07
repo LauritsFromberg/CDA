@@ -104,9 +104,7 @@ def slope_features(X,window_size,window_shift,fs):
     for i in range(len(windows)):
         y2 = np.max(X[windows[i]])
         y1 = np.min(X[windows[i]])
-        x2 = X[windows[i][len(X[windows[i]])-1]]
-        x1 = X[windows[i][0]]
-        slope.append((y2-y1)/(x2-x1))
+        slope.append((y2-y1)/window_size)
     
     return {"max": max(slope), "min": min(slope),"avg": sum(slope)/len(slope)}
 
@@ -189,3 +187,4 @@ def extra_features(X,window_size,window_shift,fs):
 
 # stat_feat = extra_features(np.arange(40),5,1,1)
 # print(stat_feat)
+

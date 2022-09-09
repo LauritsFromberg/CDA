@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 from scipy import signal
 from scipy import stats as stats
-from scipy import integrate as int
+from scipy import integrate as inte
 import statsmodels.api as sm
 
 # helper function for Butterworth filter
@@ -179,7 +179,7 @@ def extra_features(X,window_size,window_shift,fs):
         temp = X[windows[i]]
         avg_gradient.append(np.mean(np.gradient(temp))) # note: numpy uses "complex" finite difference method
         avg_auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
-        abs_int.append(abs(int.simpson(temp,windows[i]))) # absolute integral
+        abs_int.append(abs(inte.simpson(temp,windows[i]))) # absolute integral
 
     return {"max avg_gradient": max(avg_gradient),"min avg_gradient": min(avg_gradient), "avg avg_gradient": sum(avg_gradient)/len(avg_gradient),
             "max avg_auto_corr": max(avg_auto_corr), "min avg_auto_corr": min(avg_auto_corr), "avg avg_auto_corr": sum(avg_auto_corr)/len(avg_auto_corr),
@@ -187,4 +187,7 @@ def extra_features(X,window_size,window_shift,fs):
 
 # stat_feat = extra_features(np.arange(40),5,1,1)
 # print(stat_feat)
+
+#abc = [["2","11",'3',2,4,5],[2,3,4],["2","2"]]
+#print(np.array(np.hstack([[int(x123) for x123 in lst] for lst in abc])))
 

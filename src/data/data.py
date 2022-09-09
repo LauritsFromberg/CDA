@@ -23,7 +23,7 @@ vers1 =  ["S4","S7","S8","S10","S13","S15","S17"] # remove S5 due to NaN
 vers2 = ["S2","S3","S6","S9","S11","S14","S16"]
 
 # emotional states (versions of study-protocol)
-cond = ["base","stress","amusement","meditation_1","mediation_2"]
+cond = ["base","stress","amusement","meditation_1","meditation_2"]
 cond1 = ["base","amusement","meditation_1","stress","meditation_2"]
 cond2 = ["base","stress","meditation_1","amusement","meditation_2"]
 
@@ -169,6 +169,4 @@ for folder,sub_folders,files in os.walk(path):
 
         dataset[sub] = dataset_temp # add to nested dictionary
 
-            
-
-print(dataset)
+#print(dataset,quest)

@@ -7,13 +7,13 @@ from utils import preprocessing_utils as pre
 from data import *
 
 # index for leave-one-patient-out cross-validation
-CV_idx = ["S6"]
+CV_idx = []
 
 # Signals to include
-signals = ["EDA","TEMP","BVP"]
-window_size = [20,20,20]
-window_shift = [5,5,5]
-fs = [4,4,32]
+signals = ["EDA","TEMP","BVP","HR"]
+window_size = [20,20,20,20]
+window_shift = [5,5,5,5]
+fs = [4,4,32,1]
 
 
 # initialise memory
@@ -54,7 +54,6 @@ for j in range(5): # for every phase
                 X_extra = [*pre.extra_features(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),window_size[count],window_shift[count],fs[count]).values()]
                 X_temp.extend(X_extra)
                 count += 1
-    print(print(X_temp),len(X_temp))            
     #print(X_temp,[i for i, arr in enumerate(X_temp) if not np.isfinite(arr).all()],len(X_temp))
         
 

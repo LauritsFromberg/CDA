@@ -191,3 +191,6 @@ def extra_features(X,window_size,window_shift,fs):
 #abc = [["2","11",'3',2,4,5],[2,3,4],["2","2"]]
 #print(np.array(np.hstack([[int(x123) for x123 in lst] for lst in abc])))
 
+#X = np.zeros((5,109))
+#X[0,:] = np.ones(109)
+#print(np.ones(109))

@@ -17,7 +17,6 @@ window_size = [20,20,20,20]
 window_shift = [5,5,5,5]
 fs = [4,4,32,1]
 
-
 # initialise memory
 X_test = np.zeros((5,109))
 y_test = np.zeros((5,32))
@@ -55,10 +54,10 @@ for j in range(5): # for every phase
                 X_extra = [*pre.extra_features(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),window_size[count],window_shift[count],fs[count]).values()]
                 X_temp.extend(X_extra)
                 count += 1
-        X_test[j,:] = X_test.T # features
+        X_test[j,:] = X_temp # features
         y_test[j,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
-print("X",X_test,"y",y_test)
 
+print(X_test,y_test)
 
 
 

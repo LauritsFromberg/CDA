@@ -1,3 +1,4 @@
+from tkinter import N
 import numpy as np
 from tqdm import tqdm
 from sklearn import linear_model
@@ -21,15 +22,18 @@ X_test = np.zeros((5,109)) # number of phases (for one subject) x number of feat
 y_test = np.zeros((5,32)) # number of phases x number of questions
 
 # initialise number of cross-validation iterations
-n = 10
+#n = 10
+n = 1
 
-# make list of random subjects to exclude in each iteration
-s = np.random.sample(len(sub_lst),n) 
+# make list of random subjects to exclude in each iteration (without replacement)
+s = np.arange(len(sub_lst))
+np.random.shuffle(s)
+
 
 # leave-one-patient-out cross-validation
 for v in range(n):
-    CV_idx = [sub_lst[s[v]]] # pick random subject to exclude for testing 
-    train_idx = [sub_lst[np.arange(len(sub_lst))!=s[v]]] # use all other subjects for training 
+    CV_idx = [np.array(sub_lst)[s[v]]] # pick random subject to exclude for testing 
+    train_idx = [np.array(sub_lst)[np.arange(len(sub_lst))!=s[v]]][0] # use all other subjects for training 
     c_train = -1 # counter 
     c_test = -1 # counter
     for j in range(5): # for every phase
@@ -63,8 +67,11 @@ for v in range(n):
                     X_extra = [*pre.extra_features(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_extra)
                     count += 1
+            # assign values
             X_train[c_train,:] = X_temp # features
             y_train[c_train,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
+
+            # standardise 
 
         # test_set
         for i in CV_idx: # for every member of testing
@@ -95,13 +102,13 @@ for v in range(n):
                     X_extra = [*pre.extra_features(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_extra)
                     count += 1
+            # assign values
             X_test[c_test,:] = X_temp # features
             y_test[c_test,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
 
-#OBS! Find ud af indekseringen på X og y 
-
-# models
+    # models
+    print(X_train,y_train)
 
 
 

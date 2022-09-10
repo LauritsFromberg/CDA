@@ -197,3 +197,10 @@ def extra_features(X,window_size,window_shift,fs):
 
 #sub_lst = ["S10","S11","S13","S14","S15","S16","S17","S2","S3","S4","S6","S7","S8","S9"]
 #print([sub_lst[5]])
+#a = np.arange(len(sub_lst))
+#np.random.shuffle(a)
+#print(a[0:10])
+
+#train_idx = [np.array(sub_lst)[np.arange(len(sub_lst))!=a[0]]][0] # use all other subjects for training 
+#CV_idx = [np.array(sub_lst)[a[0]]]
+#print(CV_idx)

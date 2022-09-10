@@ -194,3 +194,6 @@ def extra_features(X,window_size,window_shift,fs):
 #X = np.zeros((5,109))
 #X[0,:] = np.ones(109)
 #print(np.ones(109))
+
+#sub_lst = ["S10","S11","S13","S14","S15","S16","S17","S2","S3","S4","S6","S7","S8","S9"]
+#print([sub_lst[5]])

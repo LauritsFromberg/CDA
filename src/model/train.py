@@ -52,7 +52,7 @@ model_dt = DecisionTreeRegressor()
 model_rf = RandomForestRegressor()
 
 # initialise number of cross-validation iterations
-n = 1
+n = 2
 
 # make list of random subjects to exclude in each iteration (without replacement)
 s = np.arange(len(sub_lst))
@@ -149,15 +149,17 @@ for v in range(n):
 
     # grid search
     grid_en = GridSearchCV(estimator=model_en,param_grid=param_grid_en,cv=5)
-    grid_nn = GridSearchCV(estimator=model_nn,param_grid=param_grid_nn,cv=5)
-    grid_dt = GridSearchCV(estimator=model_dt,param_grid=param_grid_dt,cv=5)
-    grid_rf = GridSearchCV(estimator=model_rf,param_grid=param_grid_rf,cv=5)
-
-    # fit 
     grid_en.fit(X_train,y_train)
+    print(1)
+    grid_nn = GridSearchCV(estimator=model_nn,param_grid=param_grid_nn,cv=5)
     grid_nn.fit(X_train,y_train)
+    print(2)
+    grid_dt = GridSearchCV(estimator=model_dt,param_grid=param_grid_dt,cv=5)
     grid_dt.fit(X_train,y_train)
+    print(3)
+    grid_rf = GridSearchCV(estimator=model_rf,param_grid=param_grid_rf,cv=5)
     grid_rf.fit(X_train,y_train)
+    print(4)
 
     # save best model for testing 
     en[v] = {"best estimator":grid_en.best_estimator, "best parameters": grid_en.best_params_}

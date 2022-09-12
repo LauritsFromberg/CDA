@@ -18,9 +18,9 @@ def extract_coefficients(p, degree):
     return c[::-1]
 
 def Standardise(X,mean,std):
-    X = X-mean
-    X = X/std
+    X = (X-mean)/std
     return X
+
 
 def EMA(X,a):
     S = np.zeros(len(X))

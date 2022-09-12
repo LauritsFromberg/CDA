@@ -53,10 +53,12 @@ for folder,sub_folders,files in os.walk(path):
         # load questions
         if name.endswith("_quest.csv"): # find desired csv files
             df = pd.read_csv(os.path.join(folder,name),sep=";") # load into dataframe
+            df_val = df.values.tolist() # get values
+            quest_temp = {}
+            quest[sub.rsplit("_",1)[0]] = {}
+            count = 0
             if sub.rsplit("_",1)[0] in vers1: # version 1 of study-protocol
-                count = 0
                 for i in cond1:
-                    df_val = df.values.tolist() # get values
                     # special case
                     #if i == "stress":
                     #    quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3],"SSSQ":df_val[22][1:6]}
@@ -66,19 +68,19 @@ for folder,sub_folders,files in os.walk(path):
                     count += 1     
                 quest[sub.rsplit("_",1)[0]] = quest_temp # add to nested dictionary
             else: # version 2 of study-protocol
-                count = 0
                 for i in cond2:
-                    df_val = df.values.tolist() 
                     #if i == "stress": 
                     #    quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3],"SSSQ":df_val[22][1:6]}
                     #    count += 1
                     #else:   
                     quest_temp[i] = {"PANAS": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3]}
                     count += 1
-                quest[sub.rsplit("_",1)[0]] = quest_temp 
+                quest[sub.rsplit("_",1)[0]] = quest_temp
 
         # load biosignals and labels     
         elif name.endswith(".pkl"): # find files with .pkl extension
+            dataset_temp = {}
+            dataset[sub] = {}
             with open(os.path.join(folder,name) ,"rb") as file:
                 
                 tmp = pickle._Unpickler(file) # unpickle
@@ -169,4 +171,4 @@ for folder,sub_folders,files in os.walk(path):
 
         dataset[sub] = dataset_temp # add to nested dictionary
 
-#print(dataset,quest)
+#print(quest["S2"]["base"],quest["S3"]["base"],quest["S4"]["base"])

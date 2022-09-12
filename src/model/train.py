@@ -42,8 +42,8 @@ test_rf = []
 # parameters for cross-validation
 param_grid_en = {"alpha": np.arange(0.25,3,0.25), "l1_ratio": np.arange(0,1,0.1)}
 param_grid_nn = {"n_neighbors": range(3,10)}
-param_grid_dt = {"max_depth":range(5,15) ,"min_samples_split": range(2,5),"min_samples_leaf":range(2,5), "max_features": range(5,100,15)}
-param_grid_rf = {"n_estimators":range(30,151,5),"max_depth":range(5,15) ,"min_samples_split": range(2,5),"min_samples_leaf":range(2,5), "max_features": range(5,100,15)}
+param_grid_dt = {"max_depth":range(5,10) ,"min_samples_split": range(2,5),"min_samples_leaf":range(2,5), "max_features": range(25,100,25)}
+param_grid_rf = {"n_estimators":range(90,111,5),"max_depth":range(5,10) ,"min_samples_split": range(2,5),"min_samples_leaf":range(2,5), "max_features": range(25,100,25)}
     
  # models
 model_en = linear_model.ElasticNet()
@@ -178,20 +178,26 @@ gen_en = np.mean(np.array(test_en))
 gen_nn = np.mean(np.array(test_nn))
 gen_dt = np.mean(np.array(test_dt))
 gen_rf = np.mean(np.array(test_rf))
+gen_err = [gen_en,gen_nn,gen_dt,gen_rf]
 
 # find best overall model
-best_method = np.argmin(np.array([gen_en,gen_nn,gen_dt,gen_rf]))
+best_method = np.argmin(np.array(gen_err))
 if best_method == 0:
     best_model_best_method = np.argmin(np.array(test_en))
     best = en[best_model]["best estimator"]
+    best_param = en[best_model]["best parameters"]
 elif best_method == 1:
     best_model_best_method = np.argmin(np.array(test_nn))
     best = nn[best_model]["best estimator"]
+    best_param = nn[best_model]["best parameters"]
 elif best_method == 2:
     best_model_best_method = np.argmin(np.array(test_dt))
     best = dt[best_model]["best estimator"]
+    best_param = dt[best_model]["best parameters"]
 else: 
     best_model_best_method = np.argmin(np.array(test_rf))
     best = rf[best_model]["best estimator"]
+    best_param = rf[best_model]["best parameters"]
 
-print(best_method,best_model_best_method)
+
+print("best method",best_method,"best model best method",best_model_best_method,"best parameters", best_param,"generalisation error", gen_err)

@@ -118,8 +118,8 @@ def stat_features(X,window_size,window_shift,fs):
     mean = []
     median = []
     std = []
-    skewness = []
-    kurtosis = []
+    #skewness = []
+    #kurtosis = []
     min_ = []
     max_ = []
     entropy = []
@@ -140,8 +140,8 @@ def stat_features(X,window_size,window_shift,fs):
         mean.append(np.mean(temp))
         median.append(np.median(temp))
         std.append(np.std(temp))
-        skewness.append(stats.skew(temp))
-        kurtosis.append(stats.kurtosis(temp))
+        #skewness.append(stats.skew(temp))
+        #kurtosis.append(stats.kurtosis(temp))
         min_.append(np.min(temp))
         max_.append(np.max(temp)) 
         entropy.append(stats.entropy(temp))
@@ -149,8 +149,8 @@ def stat_features(X,window_size,window_shift,fs):
     return {"max mean": max(mean), "min mean": min(mean), "avg mean": sum(mean)/len(mean),
             "max median": max(median), "min median": min(median), "avg median": sum(median)/len(median),
             "max std": max(std), "min std": min(std), "avg std": sum(std)/len(std),
-            "max skewness": max(skewness), "min skewness": min(skewness), "avg skewness": sum(skewness)/len(skewness),
-            "max kurtosis": max(kurtosis), "min kurtosis": min(kurtosis), "avg kurtosis": sum(kurtosis)/len(kurtosis),
+            #"max skewness": max(skewness), "min skewness": min(skewness), "avg skewness": sum(skewness)/len(skewness),
+            #"max kurtosis": max(kurtosis), "min kurtosis": min(kurtosis), "avg kurtosis": sum(kurtosis)/len(kurtosis),
             "avg min": sum(min_)/len(min_),"avg max": sum(max_)/len(max_), "min entropy": min(entropy),
             "max entropy": max(entropy), "avg entropy": sum(entropy)/len(entropy)}
 
@@ -161,7 +161,7 @@ def extra_features(X,window_size,window_shift,fs):
 
     # initialise memory
     avg_gradient = []
-    avg_auto_corr = [] 
+    #avg_auto_corr = [] 
     abs_int = []
 
     # calculate number of points from specified frequency
@@ -178,11 +178,11 @@ def extra_features(X,window_size,window_shift,fs):
     for i in range(len(windows)):
         temp = X[windows[i]]
         avg_gradient.append(np.mean(np.gradient(temp))) # note: numpy uses "complex" finite difference method
-        avg_auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
+        #avg_auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
         abs_int.append(abs(inte.simpson(temp,windows[i]))) # absolute integral
 
     return {"max avg_gradient": max(avg_gradient),"min avg_gradient": min(avg_gradient), "avg avg_gradient": sum(avg_gradient)/len(avg_gradient),
-            "max avg_auto_corr": max(avg_auto_corr), "min avg_auto_corr": min(avg_auto_corr), "avg avg_auto_corr": sum(avg_auto_corr)/len(avg_auto_corr),
+            #"max avg_auto_corr": max(avg_auto_corr), "min avg_auto_corr": min(avg_auto_corr), "avg avg_auto_corr": sum(avg_auto_corr)/len(avg_auto_corr),
             "max absolute integral": max(abs_int), "min absolute integral": min(abs_int), "avg absolute integral": sum(abs_int)/len(abs_int)}
 
 # stat_feat = extra_features(np.arange(40),5,1,1)

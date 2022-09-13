@@ -171,6 +171,7 @@ for folder,sub_folders,files in os.walk(path):
 
         dataset[sub] = dataset_temp # add to nested dictionary
 
+
 #print(quest["S2"]["base"],quest["S3"]["base"],quest["S4"]["base"])
 
 #print(type(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4))),np.hstack(pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4)))

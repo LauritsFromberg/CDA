@@ -5,6 +5,8 @@ from scipy import stats as stats
 from scipy import integrate as inte
 import statsmodels.api as sm
 
+## functions for pre-processing
+
 # helper function for Butterworth filter
 def extract_coefficients(p, degree):
     n = degree + 1

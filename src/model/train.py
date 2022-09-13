@@ -7,13 +7,14 @@ from sklearn import linear_model
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 sys.path.insert(0, 'C:/Users/Bruger/Documents/CDA/CDA/src/data')
 from utils import preprocessing_utils as pre
 from data import *
 
-with warnings.catch_warnings(): # disable the convergence warnings from elastic net
+with warnings.catch_warnings(): # disable convergence warnings
     warnings.simplefilter("ignore")
 
 ## train models
@@ -56,14 +57,14 @@ test_rf_r2 = []
 test_gb_r2 = []
 
 # parameters for cross-validation
-param_grid_en = {"alpha": np.arange(0.25,3,0.25), "l1_ratio": np.arange(0,1,0.1)}
-param_grid_nn = {"n_neighbors": range(3,10)}
-param_grid_dt = {"max_depth":range(3,8) ,"min_samples_split": range(2,4),"min_samples_leaf":range(1,3), "max_features": range(25,100,25)}
-param_grid_rf = {"n_estimators":range(90,111,10),"max_depth":range(3,8) ,"min_samples_split": range(2,4),"min_samples_leaf":range(1,3),"max_features": range(25,100,25)}
-param_grid_gb = {"loss":["squared_error","huber"],"learning_rate":np.arange(0.1,3,0.75),"n_estimators":range(90,111,10),"max_depth":range(3,8),"min_samples_split": range(2,4),"min_samples_leaf":range(1,3),"max_features": range(25,100,25),"alpha":list(np.arange(0.1,1,0.25))}   
+param_grid_en = {"alpha": list(np.arange(0.25,2.75,0.5)), "l1_ratio": list(np.arange(0.1,0.8,0.1))}
+param_grid_nn = {"n_neighbors": range(4,13)}
+param_grid_dt = {"max_depth":[2,3,5,8] ,"min_samples_split": range(2,5),"min_samples_leaf":range(1,4), "max_features": range(50,101,25)}
+param_grid_rf = {"n_estimators":range(90,111,10),"max_depth":[2,3,5,8],"min_samples_split": range(2,5),"min_samples_leaf":range(1,4),"max_features": range(50,101,25)}
+param_grid_gb = {"estimator__n_estimators":range(90,111,10),"estimator__max_depth":[2,3,5,8],"estimator__min_samples_split": range(2,5),"estimator__min_samples_leaf":range(1,4),"estimator__max_features": range(50,101,25)}   
 
 # initialise number of cross-validation iterations
-n = 2
+n = 10
 
 # make list of random subjects to exclude in each iteration (without replacement)
 s = np.arange(len(sub_lst))
@@ -76,7 +77,7 @@ for v in range(n):
     state = np.random.randint(0,100000)
 
      # models
-    model_en = linear_model.ElasticNet(selection="random",random_state=state)
+    model_en = linear_model.ElasticNet(tol=0.05,max_iter=10000,selection="random",random_state=state)
     model_nn = KNeighborsRegressor(weights="distance",p=2)
     model_dt = DecisionTreeRegressor(random_state=state)
     model_rf = RandomForestRegressor(random_state=state)
@@ -85,7 +86,7 @@ for v in range(n):
     CV_idx = [np.array(sub_lst)[s[v]]] # pick random subject to exclude for testing 
     train_idx = [np.array(sub_lst)[np.arange(len(sub_lst))!=s[v]]][0] # use all other subjects for training 
     c_train = -1 # counter 
-    c_test = -1 # counter
+    c_test = -1 # counter 
 
     # for every phase
     for j in range(5): 
@@ -155,8 +156,8 @@ for v in range(n):
             # assign values
             X_test[c_test,:] = X_temp # features
             y_test[c_test,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
-                 
-    # compute values for standardisation
+
+    #compute values for standardisation
     X_train_mean = np.mean(X_train,axis=0)
     X_train_std = np.std(X_train,axis=0)
     y_train_mean = np.mean(y_train,axis=0)
@@ -164,28 +165,28 @@ for v in range(n):
 
     # standardise train and test
     X_train = pre.Standardise(X_train,X_train_mean,X_train_std)
-    y_train = pre.Standardise(y_train,y_train_mean,y_train_std)
     X_test = pre.Standardise(X_test,X_train_mean,X_train_std)
+    y_train = pre.Standardise(y_train,y_train_mean,y_train_std)
     y_test = pre.Standardise(y_test,y_train_mean,y_train_std)
 
     # grid search
-    grid_en = GridSearchCV(estimator=model_en,param_grid=param_grid_en,cv=5)
+    grid_en = GridSearchCV(estimator=model_en,param_grid=param_grid_en,cv=5,n_jobs=-1)
     grid_en.fit(X_train,y_train)
-    grid_nn = GridSearchCV(estimator=model_nn,param_grid=param_grid_nn,cv=5)
+    grid_nn = GridSearchCV(estimator=model_nn,param_grid=param_grid_nn,cv=5,n_jobs=-1)
     grid_nn.fit(X_train,y_train)
-    grid_dt = GridSearchCV(estimator=model_dt,param_grid=param_grid_dt,cv=5)
+    grid_dt = GridSearchCV(estimator=model_dt,param_grid=param_grid_dt,cv=5,n_jobs=-1)
     grid_dt.fit(X_train,y_train)
-    grid_rf = GridSearchCV(estimator=model_rf,param_grid=param_grid_rf,cv=5)
+    grid_rf = GridSearchCV(estimator=model_rf,param_grid=param_grid_rf,cv=5,n_jobs=-1)
     grid_rf.fit(X_train,y_train)
-    grid_gb = GridSearchCV(estimator=model_gb,param_grid=param_grid_gb,cv=5)
+    grid_gb = GridSearchCV(estimator=MultiOutputRegressor(model_gb,n_jobs=-1),param_grid=param_grid_gb,cv=5,n_jobs=-1)
     grid_gb.fit(X_train,y_train)
 
     # save best model for testing 
-    en[v] = {"best estimator":grid_en.best_estimator, "best parameters": grid_en.best_params_}
-    nn[v] = {"best estimator":grid_nn.best_estimator, "best parameters": grid_nn.best_params_}
-    dt[v] = {"best estimator":grid_dt.best_estimator, "best parameters": grid_dt.best_params_}
-    rf[v] = {"best estimator":grid_rf.best_estimator, "best parameters": grid_rf.best_params_}
-    gb[v] = {"best estimator":grid_gb.best_estimator, "best parameters": grid_gb.best_params_}
+    en[v] = {"best estimator":grid_en.best_estimator_, "best parameters": grid_en.best_params_}
+    nn[v] = {"best estimator":grid_nn.best_estimator_, "best parameters": grid_nn.best_params_}
+    dt[v] = {"best estimator":grid_dt.best_estimator_, "best parameters": grid_dt.best_params_}
+    rf[v] = {"best estimator":grid_rf.best_estimator_, "best parameters": grid_rf.best_params_}
+    gb[v] = {"best estimator":grid_gb.best_estimator_, "best parameters": grid_gb.best_params_}
 
     # testing
     test_en_mse.append(mean_squared_error(y_test,en[v]["best estimator"].predict(X_test)))
@@ -219,24 +220,24 @@ gen_err_r2 = [gen_en_r2,gen_nn_r2,gen_dt_r2,gen_rf_r2,gen_gb_r2]
 best_method = np.argmin(np.array(gen_err))
 if best_method == 0:
     best_model_best_method = np.argmin(np.array(test_en_mse))
-    best = en[best_model]["best estimator"]
-    best_param = en[best_model]["best parameters"]
+    best = en[best_model_best_method]["best estimator"]
+    best_param = en[best_model_best_method]["best parameters"]
 elif best_method == 1:
     best_model_best_method = np.argmin(np.array(test_nn_mse))
-    best = nn[best_model]["best estimator"]
-    best_param = nn[best_model]["best parameters"]
+    best = nn[best_model_best_method]["best estimator"]
+    best_param = nn[best_model_best_method]["best parameters"]
 elif best_method == 2:
     best_model_best_method = np.argmin(np.array(test_dt_mse))
-    best = dt[best_model]["best estimator"]
-    best_param = dt[best_model]["best parameters"]
+    best = dt[best_model_best_method]["best estimator"]
+    best_param = dt[best_model_best_method]["best parameters"]
 elif best_method == 3: 
     best_model_best_method = np.argmin(np.array(test_rf_mse))
-    best = rf[best_model]["best estimator"]
-    best_param = rf[best_model]["best parameters"]
+    best = rf[best_model_best_method]["best estimator"]
+    best_param = rf[best_model_best_method]["best parameters"]
 else: 
     best_model_best_method = np.argmin(np.array(test_gb_mse))
-    best = gb[best_model]["best estimator"]
-    best_param = gb[best_model]["best parameters"]
+    best = gb[best_model_best_method]["best estimator"]
+    best_param = gb[best_model_best_method]["best parameters"]
 
 # save model 
 filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_model.pkl"

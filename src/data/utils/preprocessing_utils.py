@@ -21,6 +21,10 @@ def Standardise(X,mean,std):
     X = (X-mean)/std
     return X
 
+def burn_in(X,burn,fs):
+    n_exclude = burn*fs
+    X = X[n_exclude:]
+    return X
 
 def EMA(X,a):
     S = np.zeros(len(X))

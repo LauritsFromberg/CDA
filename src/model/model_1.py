@@ -2,14 +2,8 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
-import sklearn
-from sklearn import linear_model
-import warnings
-import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
-from matplotlib.cm import cool
 
 ## load data
 
@@ -104,24 +98,14 @@ ax1.grid()
 ax2.grid()
 ax3.grid()
 ax4.grid()
-ax1.legend(handles=legend_elements,loc="center left", prop={'size': 8})
-ax2.legend(handles=legend_elements,loc="center left", prop={'size': 8})
-ax3.legend(handles=legend_elements,loc="center left", prop={'size': 8})
-ax4.legend(handles=legend_elements,loc="center left", prop={'size': 8})
-plt.show()
-
-# extra
-plt.plot(BVP)
+ax1.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
+ax2.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
+ax3.legend(handles=legend_elements,loc="lower left", prop={'size': 8},ncol=5)
+ax4.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
 plt.show()
 
 
 
 
-# hyper-parameters
 
-# # model
-# with warnings.catch_warnings(): # disable all convergence warnings from elastic net
-#    warnings.simplefilter("ignore")
-
-#    model = sklearn.linear_model.ElasticNet().fit(X,y) # fit elastic net model
 

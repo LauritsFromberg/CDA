@@ -1,5 +1,5 @@
 import numpy as np
-import sklearn
+import pickle
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
@@ -199,5 +199,14 @@ else:
     best = rf[best_model]["best estimator"]
     best_param = rf[best_model]["best parameters"]
 
+# save model
+filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_model.pkl"
+pickle.dump(best,open(filename,"wb"))
+
+# save extra information
+extra = ["best method:",best_method,"best model best method",best_model_best_method,"generalisation errors",gen_err]
+with open("C:/Users/Bruger/Documents/CDA/CDA/models/extra_inf.txt","w") as f:
+    for line in extra:
+        f.write(f"{line}\n")
 
 print("best method",best_method,"best model best method",best_model_best_method,"best parameters", best_param,"generalisation error", gen_err)

@@ -1,6 +1,8 @@
-#from utils import preprocessing_utils as pre
-import pickle 
-
+import sys
+import pickle
+import numpy as np
+sys.path.insert(0, 'C:/Users/Bruger/Documents/CDA/CDA/src/data')
+from utils import preprocessing_utils as pre
 
 ## compute feature importance
 
@@ -11,11 +13,25 @@ filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_param.pkl"
 file = open(filename,"rb")
 param = pickle.load(file)
 file.close()
+print(param)
 
-# # define model
-# model = 
+# load dataset
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/dataset.pkl"
+file = open(filename,"rb")
+dataset = pickle.load(file)
+file.close()
+
+# load questions
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/quest.pkl"
+file = open(filename,"rb")
+quest = pickle.load(file)
+file.close()
+
+# define model
+#model = 
 
 
+# training
 
 
 #     CV_idx = [np.array(sub_lst)[s[v]]] # pick random subject to exclude for testing 
@@ -60,3 +76,5 @@ file.close()
 #             y_train[c_train,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
 
+# feature importance
+#print()

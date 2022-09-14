@@ -171,6 +171,14 @@ for folder,sub_folders,files in os.walk(path):
 
         dataset[sub] = dataset_temp # add to nested dictionary
 
+# save dataset and quest
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/dataset.pkl"
+pickle.dump(dataset,open(filename,"wb"))
+
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/quest.pkl"
+pickle.dump(quest,open(filename,"wb"))
+
+
 
 #print(quest["S2"]["base"],quest["S3"]["base"],quest["S4"]["base"])
 

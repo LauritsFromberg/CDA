@@ -9,13 +9,10 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error
 sys.path.insert(0, 'C:/Users/Bruger/Documents/CDA/CDA/src/data')
 from utils import preprocessing_utils as pre
 from data import *
-
-with warnings.catch_warnings(): # disable convergence warnings
-    warnings.simplefilter("ignore")
 
 ## train models
 
@@ -50,15 +47,10 @@ test_nn_mse = []
 test_dt_mse = []
 test_rf_mse = []
 test_gb_mse = []
-test_en_r2 = []
-test_nn_r2 = []
-test_dt_r2 = []
-test_rf_r2 = []
-test_gb_r2 = []
 
 # parameters for cross-validation
-param_grid_en = {"alpha": list(np.arange(0.25,2.75,0.5)), "l1_ratio": list(np.arange(0.1,0.8,0.1))}
-param_grid_nn = {"n_neighbors": range(4,13)}
+param_grid_en = {"alpha": list(np.arange(0.25,1.75,0.75)), "l1_ratio": list(np.arange(0.1,0.7,0.1))}
+param_grid_nn = {"n_neighbors": range(6,15)}
 param_grid_dt = {"max_depth":[2,3,5,8] ,"min_samples_split": range(2,5),"min_samples_leaf":range(1,4), "max_features": range(50,101,25)}
 param_grid_rf = {"n_estimators":range(90,111,10),"max_depth":[2,3,5,8],"min_samples_split": range(2,5),"min_samples_leaf":range(1,4),"max_features": range(50,101,25)}
 param_grid_gb = {"estimator__n_estimators":range(90,111,10),"estimator__max_depth":[2,3,5,8],"estimator__min_samples_split": range(2,5),"estimator__min_samples_leaf":range(1,4),"estimator__max_features": range(50,101,25)}   
@@ -77,7 +69,7 @@ for v in range(n):
     state = np.random.randint(0,100000)
 
      # models
-    model_en = linear_model.ElasticNet(tol=0.05,max_iter=10000,selection="random",random_state=state)
+    model_en = linear_model.ElasticNet(tol=0.01,max_iter=10000,selection="random",random_state=state)
     model_nn = KNeighborsRegressor(weights="distance",p=2)
     model_dt = DecisionTreeRegressor(random_state=state)
     model_rf = RandomForestRegressor(random_state=state)
@@ -160,18 +152,16 @@ for v in range(n):
     #compute values for standardisation
     X_train_mean = np.mean(X_train,axis=0)
     X_train_std = np.std(X_train,axis=0)
-    y_train_mean = np.mean(y_train,axis=0)
-    y_train_std = np.std(y_train,axis=0)
 
     # standardise train and test
     X_train = pre.Standardise(X_train,X_train_mean,X_train_std)
     X_test = pre.Standardise(X_test,X_train_mean,X_train_std)
-    y_train = pre.Standardise(y_train,y_train_mean,y_train_std)
-    y_test = pre.Standardise(y_test,y_train_mean,y_train_std)
 
     # grid search
     grid_en = GridSearchCV(estimator=model_en,param_grid=param_grid_en,cv=5,n_jobs=-1)
-    grid_en.fit(X_train,y_train)
+    with warnings.catch_warnings(): # disable convergence warnings
+        warnings.simplefilter("ignore")
+        grid_en.fit(X_train,y_train)
     grid_nn = GridSearchCV(estimator=model_nn,param_grid=param_grid_nn,cv=5,n_jobs=-1)
     grid_nn.fit(X_train,y_train)
     grid_dt = GridSearchCV(estimator=model_dt,param_grid=param_grid_dt,cv=5,n_jobs=-1)
@@ -195,26 +185,14 @@ for v in range(n):
     test_rf_mse.append(mean_squared_error(y_test,rf[v]["best estimator"].predict(X_test)))
     test_gb_mse.append(mean_squared_error(y_test,gb[v]["best estimator"].predict(X_test)))
 
-    test_en_r2.append(r2_score(y_test,en[v]["best estimator"].predict(X_test)))
-    test_nn_r2.append(r2_score(y_test,nn[v]["best estimator"].predict(X_test)))
-    test_dt_r2.append(r2_score(y_test,dt[v]["best estimator"].predict(X_test)))
-    test_rf_r2.append(r2_score(y_test,rf[v]["best estimator"].predict(X_test)))
-    test_gb_r2.append(r2_score(y_test,gb[v]["best estimator"].predict(X_test)))
-
 # compare generalisation errors
 gen_en = np.mean(np.array(test_en_mse))
-gen_en_r2 = np.mean(np.array(test_en_r2))
 gen_nn = np.mean(np.array(test_nn_mse))
-gen_nn_r2 = np.mean(np.array(test_nn_r2))
 gen_dt = np.mean(np.array(test_dt_mse))
-gen_dt_r2 = np.mean(np.array(test_dt_r2))
 gen_rf = np.mean(np.array(test_rf_mse))
-gen_rf_r2 = np.mean(np.array(test_rf_r2))
 gen_gb = np.mean(np.array(test_gb_mse))
-gen_gb_r2 = np.mean(np.array(test_gb_r2))
 
-gen_err = [gen_en,gen_nn,gen_dt,gen_rf,gen_gb]
-gen_err_r2 = [gen_en_r2,gen_nn_r2,gen_dt_r2,gen_rf_r2,gen_gb_r2]
+gen_err = [gen_en,gen_nn,gen_dt,gen_rf]
 
 # find best overall model
 best_method = np.argmin(np.array(gen_err))
@@ -230,7 +208,7 @@ elif best_method == 2:
     best_model_best_method = np.argmin(np.array(test_dt_mse))
     best = dt[best_model_best_method]["best estimator"]
     best_param = dt[best_model_best_method]["best parameters"]
-elif best_method == 3: 
+elif best_method == 3:
     best_model_best_method = np.argmin(np.array(test_rf_mse))
     best = rf[best_model_best_method]["best estimator"]
     best_param = rf[best_model_best_method]["best parameters"]
@@ -245,10 +223,10 @@ pickle.dump(best,open(filename,"wb"))
 
 # save model parameters
 filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_param.pkl"
-pickle.dump(best_param,open(filename,"wb"))
+pickle.dump(best_param,open(filename ,"wb"))
 
 # save extra information
-extra = ["best method:",best_method,"best model best method:",best_model_best_method,"generalisation errors mse:",gen_err,"generalisation errors r2:",gen_err_r2]
+extra = ["best method:",best_method,"best model best method:",best_model_best_method,"generalisation errors mse:",gen_err]
 with open("C:/Users/Bruger/Documents/CDA/CDA/models/extra_inf.txt","w") as f:
     for line in extra:
         f.write(f"{line}\n")

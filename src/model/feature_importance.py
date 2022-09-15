@@ -47,7 +47,7 @@ fs = [4,4,32,1]
 t = 10
 
 # initialise memory
-X_train = np.zeros((70,115)) # number of phases (for 14 subjects) x number of features
+X_train = np.zeros((70,112)) # number of phases (for 14 subjects) x number of features
 y_train = np.zeros((70,32)) # number of phases (for 14 subjects) x number of questions
 
 # create training set for all subjects
@@ -84,7 +84,7 @@ for j in range(5):
                     X_temp.extend(X_extra)
                     count += 1
             # assign values
-            X_train[c_train,:] = X_temp # features
+            X_train[c_train,:] = X_temp[np.arange(len(X_temp))!=[83,84,85]] # features without entropy for BVP
             y_train[c_train,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
 # train model on all subjects

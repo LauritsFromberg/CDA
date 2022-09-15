@@ -29,9 +29,9 @@ fs = [4,4,32,1]
 t = 10
 
 # initialise memory
-X_train = np.zeros((65,115)) # number of phases (for 13 subjects) x number of features
+X_train = np.zeros((65,112)) # number of phases (for 13 subjects) x number of features
 y_train = np.zeros((65,32)) # number of phases (for 13 subjects) x number of questions
-X_test = np.zeros((5,115)) # number of phases (for one subject) x number of features
+X_test = np.zeros((5,112)) # number of phases (for one subject) x number of features
 y_test = np.zeros((5,32)) # number of phases x number of questions
 
 # dictonaries to save best models
@@ -113,7 +113,7 @@ for v in range(n):
                     X_temp.extend(X_extra)
                     count += 1
             # assign values
-            X_train[c_train,:] = X_temp # features
+            X_train[c_train,:] = X_temp[np.arange(len(X_temp))!=[83,84,85]] # features without entropy for BVP
             y_train[c_train,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
         # test set
@@ -141,18 +141,17 @@ for v in range(n):
                     X_slope = [*pre.slope_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_slope)
                     X_stat = [*pre.stat_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
-                    X_temp.extend(X_slope)
+                    X_temp.extend(X_stat)
                     X_extra = [*pre.extra_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_extra)
                     count += 1
             # assign values
-            X_test[c_test,:] = X_temp # features
+            X_test[c_test,:] = X_temp[np.arange(len(X_temp))!=[83,84,85]] # features
             y_test[c_test,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
     #compute values for standardisation
     X_train_mean = np.mean(X_train,axis=0)
     X_train_std = np.std(X_train,axis=0)
-
     # standardise train and test
     X_train = pre.Standardise(X_train,X_train_mean,X_train_std)
     X_test = pre.Standardise(X_test,X_train_mean,X_train_std)

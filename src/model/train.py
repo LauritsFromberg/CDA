@@ -29,9 +29,9 @@ fs = [4,4,32,1]
 t = 10
 
 # initialise memory
-X_train = np.zeros((65,82)) # number of phases (for 13 subjects) x number of features
+X_train = np.zeros((65,115)) # number of phases (for 13 subjects) x number of features
 y_train = np.zeros((65,32)) # number of phases (for 13 subjects) x number of questions
-X_test = np.zeros((5,82)) # number of phases (for one subject) x number of features
+X_test = np.zeros((5,115)) # number of phases (for one subject) x number of features
 y_test = np.zeros((5,32)) # number of phases x number of questions
 
 # dictonaries to save best models
@@ -108,7 +108,7 @@ for v in range(n):
                     X_slope = [*pre.slope_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_slope)
                     X_stat = [*pre.stat_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
-                    X_temp.extend(X_slope)
+                    X_temp.extend(X_stat)
                     X_extra = [*pre.extra_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_extra)
                     count += 1
@@ -184,6 +184,7 @@ for v in range(n):
     test_dt_mse.append(mean_squared_error(y_test,dt[v]["best estimator"].predict(X_test)))
     test_rf_mse.append(mean_squared_error(y_test,rf[v]["best estimator"].predict(X_test)))
     test_gb_mse.append(mean_squared_error(y_test,gb[v]["best estimator"].predict(X_test)))
+    print(v)
 
 # compare generalisation errors
 gen_en = np.mean(np.array(test_en_mse))
@@ -192,7 +193,7 @@ gen_dt = np.mean(np.array(test_dt_mse))
 gen_rf = np.mean(np.array(test_rf_mse))
 gen_gb = np.mean(np.array(test_gb_mse))
 
-gen_err = [gen_en,gen_nn,gen_dt,gen_rf]
+gen_err = [gen_en,gen_nn,gen_dt,gen_rf,gen_gb]
 
 # find best overall model
 best_method = np.argmin(np.array(gen_err))

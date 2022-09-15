@@ -1,9 +1,7 @@
 import numpy as np 
-import scipy
 from scipy import signal
 from scipy import stats as stats
 from scipy import integrate as inte
-import statsmodels.api as sm
 
 ## functions for pre-processing
 

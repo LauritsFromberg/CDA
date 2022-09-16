@@ -75,6 +75,14 @@ for j in range(5):
                     X_extra_phasic = [*pre.extra_features(np.hstack(pre.burn_in(np.hstack(dataset[i][cond[j]]["wrist"][k]["Phasic"]),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_extra_phasic)
                     count += 1
+                elif k == "BVP":
+                    X_slope = [*pre.slope_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
+                    X_temp.extend(X_slope)
+                    X_stat = [*pre.stat_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
+                    X_temp.extend(X_stat[0:11]) # exclude entropy features for BVP
+                    X_extra = [*pre.extra_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
+                    X_temp.extend(X_extra)
+                    count += 1
                 else:
                     X_slope = [*pre.slope_features(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset[i][cond[j]]["wrist"][k])),t,fs[count])),window_size[count],window_shift[count],fs[count]).values()]
                     X_temp.extend(X_slope)
@@ -84,7 +92,7 @@ for j in range(5):
                     X_temp.extend(X_extra)
                     count += 1
             # assign values
-            X_train[c_train,:] = X_temp[np.arange(len(X_temp))!=[83,84,85]] # features without entropy for BVP
+            X_train[c_train,:] = X_temp # features without entropy for BVP
             y_train[c_train,:] = np.hstack([[int(a) for a in lst] for lst in [*quest[i][cond[j]].values()]]) # targets
 
 # train model on all subjects

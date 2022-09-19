@@ -58,21 +58,12 @@ for folder,sub_folders,files in os.walk(path):
             quest[sub.rsplit("_",1)[0]] = {}
             count = 0
             if sub.rsplit("_",1)[0] in vers1: # version 1 of study-protocol
-                for i in cond1:
-                    # special case
-                    #if i == "stress":
-                    #    quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3],"SSSQ":df_val[22][1:6]}
-                    #    count += 1
-                    #else:   
+                for i in cond1:  
                     quest_temp[i] = {"PANAS": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3]}
                     count += 1     
                 quest[sub.rsplit("_",1)[0]] = quest_temp # add to nested dictionary
             else: # version 2 of study-protocol
-                for i in cond2:
-                    #if i == "stress": 
-                    #    quest_temp[i] = {"PANAS": df_val[4+count][1:],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3],"SSSQ":df_val[22][1:6]}
-                    #    count += 1
-                    #else:   
+                for i in cond2: 
                     quest_temp[i] = {"PANAS": df_val[4+count][1:25],"STAI": df_val[10+count][1:7],"DIM": df_val[16+count][1:3]}
                     count += 1
                 quest[sub.rsplit("_",1)[0]] = quest_temp
@@ -109,9 +100,6 @@ for folder,sub_folders,files in os.walk(path):
                             
                     # phase 4
 
-                    #idx_acc = np.array(np.where(np.array(dict["label"][::22]) == phase)) # find indices
-                    #ACC = np.array(dict["wrist"]["ACC"])[idx_acc[idx_acc<sep[0]]] # assign appropriate values
-                            
                     idx_hr = np.array(np.where(np.array(dict["label"][::700]) == phase))
                     HR = np.array(dict["wrist"]["HR"])[idx_hr[idx_hr<sep[0]]]
 
@@ -125,30 +113,20 @@ for folder,sub_folders,files in os.walk(path):
                             
                     TEMP = np.array(dict["wrist"]["TEMP"])[idx_eda_temp[idx_eda_temp<sep[2]]]
                         
-                    #idx_label = np.array(np.where(np.array(dict["label"]) == phase))
-                    #label = np.array(dict["label"])[idx_label[idx_label<sep[3]]]
-                            
                     dataset_temp[cond[3]] = {"wrist":{"BVP":BVP,"HR":HR,"EDA":EDA,"TEMP":TEMP}}
-                    #dataset_temp[cond[3]] = {"label":label,"wrist":{"ACC":ACC,"BVP":BVP,"EDA":EDA,"TEMP":TEMP}} # initialise dictionary 
 
                     # phase 5     
                             
-                    #ACC2 = np.array(dict["wrist"]["ACC"])[idx_acc[idx_acc>sep[0]]] 
                     HR2 = np.array(dict["wrist"]["HR"])[idx_hr[idx_hr>sep[0]]]
                     BVP2 = np.array(dict["wrist"]["BVP"])[idx_bvp[idx_bvp>sep[1]]]
                     EDA_tonic2 = np.array(dict["wrist"]["EDA"]["Tonic"])[idx_eda_temp[idx_eda_temp>sep[2]]]
                     EDA_phasic2 = np.array(dict["wrist"]["EDA"]["Phasic"])[idx_eda_temp[idx_eda_temp>sep[2]]]
                     EDA2 = {"Tonic":EDA_tonic2,"Phasic":EDA_phasic2}
                     TEMP2 = np.array(dict["wrist"]["TEMP"])[idx_eda_temp[idx_eda_temp>sep[2]]]  
-                    #label2 = np.array(dict["label"])[idx_label[idx_label>sep[3]]]
                             
                     dataset_temp[cond[4]] = {"wrist":{"BVP":BVP2,"HR":HR2,"EDA":EDA2,"TEMP":TEMP2}}
-                    #dataset_temp[cond[4]] = {"label":label2,"wrist":{"ACC":ACC2,"BVP":BVP2,"EDA":EDA2,"TEMP":TEMP2}} 
                     
                 else:
-
-                    #idx_acc = np.array(np.where(np.array(dict["label"][::22]) == phase))
-                    #ACC = np.array(dict["wrist"]["ACC"])[idx_acc]
 
                     idx_hr = np.array(np.where(np.array(dict["label"][::700]) == phase))
                     HR = np.array(dict["wrist"]["HR"])[idx_hr]   
@@ -163,11 +141,7 @@ for folder,sub_folders,files in os.walk(path):
                             
                     TEMP = np.array(dict["wrist"]["TEMP"])[idx_eda_temp]
                             
-                    #idx_label = np.array(np.where(np.array(dict["label"]) == phase))
-                    #label = np.array(dict["label"])[idx_label]
-                            
                     dataset_temp[cond[phase-1]] = {"wrist":{"BVP":BVP,"HR":HR,"EDA":EDA,"TEMP":TEMP}}
-                    #dataset_temp[cond[phase-1]] = {"label":label,"wrist":{"ACC":ACC, "BVP":BVP,"EDA":EDA,"TEMP":TEMP}} # initialise dictionary 
 
         dataset[sub] = dataset_temp # add to nested dictionary
 
@@ -177,10 +151,3 @@ pickle.dump(dataset,open(filename,"wb"))
 
 filename = "C:/Users/Bruger/Documents/CDA/CDA/data/quest.pkl"
 pickle.dump(quest,open(filename,"wb"))
-
-
-
-#print(quest["S2"]["base"],quest["S3"]["base"],quest["S4"]["base"])
-
-#print(type(np.hstack(pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4))),np.hstack(pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4)))
-#print(type(pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4)),pre.burn_in(np.hstack(np.hstack(dataset["S3"]["base"]["wrist"]["TEMP"])),10,4))

@@ -78,17 +78,6 @@ def Butter_self(X,order,cut_off,fs):
 
     return Y
 
-# t = np.linspace(0, 1, 1000, False)  # 1 second
-# sig = np.sin(2*np.pi*10*t) + np.sin(2*np.pi*20*t)
-
-# b,a = signal.butter(N=2, Wn=2, fs=1000)
-# filtered = signal.lfilter(b,a,sig)
-# filtered1 = Butter_self(sig,2,2,1000)
-
-
-#print(sum(filtered-filtered1))
-
-
 def slope_features(X,window_size,window_shift,fs):
 
     # initialise memory
@@ -144,8 +133,6 @@ def stat_features(X,window_size,window_shift,fs):
         mean.append(np.mean(temp))
         median.append(np.median(temp))
         std.append(np.std(temp))
-        #skewness.append(stats.skew(temp))
-        #kurtosis.append(stats.kurtosis(temp))
         min_.append(np.min(temp))
         max_.append(np.max(temp)) 
         entropy.append(stats.entropy(temp))
@@ -153,19 +140,13 @@ def stat_features(X,window_size,window_shift,fs):
     return {"max mean": max(mean), "min mean": min(mean), "avg mean": sum(mean)/len(mean),
             "max median": max(median), "min median": min(median), "avg median": sum(median)/len(median),
             "max std": max(std), "min std": min(std), "avg std": sum(std)/len(std),
-            #"max skewness": max(skewness), "min skewness": min(skewness), "avg skewness": sum(skewness)/len(skewness),
-            #"max kurtosis": max(kurtosis), "min kurtosis": min(kurtosis), "avg kurtosis": sum(kurtosis)/len(kurtosis),
             "avg min": sum(min_)/len(min_),"avg max": sum(max_)/len(max_), "min entropy": min(entropy),
             "max entropy": max(entropy), "avg entropy": sum(entropy)/len(entropy)}
-
-# stat_feat = stat_features(np.arange(40),5,1,1)
-# print(stat_feat)
 
 def extra_features(X,window_size,window_shift,fs):
 
     # initialise memory
     avg_gradient = []
-    #avg_auto_corr = [] 
     abs_int = []
 
     # calculate number of points from specified frequency
@@ -182,30 +163,9 @@ def extra_features(X,window_size,window_shift,fs):
     for i in range(len(windows)):
         temp = X[windows[i]]
         avg_gradient.append(np.mean(np.gradient(temp))) # note: numpy uses "complex" finite difference method
-        #avg_auto_corr.append(np.mean(sm.tsa.acf(temp,nlags=20))) # average of first 20 lags
         abs_int.append(abs(inte.simpson(temp,windows[i]))) # absolute integral
 
     return {"max avg_gradient": max(avg_gradient),"min avg_gradient": min(avg_gradient), "avg avg_gradient": sum(avg_gradient)/len(avg_gradient),
-            #"max avg_auto_corr": max(avg_auto_corr), "min avg_auto_corr": min(avg_auto_corr), "avg avg_auto_corr": sum(avg_auto_corr)/len(avg_auto_corr),
             "max absolute integral": max(abs_int), "min absolute integral": min(abs_int), "avg absolute integral": sum(abs_int)/len(abs_int)}
 
-# stat_feat = extra_features(np.arange(40),5,1,1)
-# print(stat_feat)
-
-#abc = [["2","11",'3',2,4,5],[2,3,4],["2","2"]]
-#print(np.array(np.hstack([[int(x123) for x123 in lst] for lst in abc])))
-
-#X = np.zeros((5,109))
-#X[0,:] = np.ones(109)
-#print(np.ones(109))
-
-#sub_lst = ["S10","S11","S13","S14","S15","S16","S17","S2","S3","S4","S6","S7","S8","S9"]
-#print([sub_lst[5]])
-#a = np.arange(len(sub_lst))
-#np.random.shuffle(a)
-#print(a[0:10])
-
-#train_idx = [np.array(sub_lst)[np.arange(len(sub_lst))!=a[0]]][0] # use all other subjects for training 
-#CV_idx = [np.array(sub_lst)[a[0]]]
-#print(CV_idx)
 

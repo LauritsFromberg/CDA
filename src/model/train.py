@@ -90,12 +90,12 @@ for v in range(n):
     # pick random state
     state = np.random.randint(0,100000)
     states.append(state)
-
+  
      # models
     model_en = linear_model.ElasticNet(tol=0.01,max_iter=10000,selection="random",random_state=state)
     model_nn = KNeighborsRegressor(weights="distance",p=2)
     model_dt = DecisionTreeRegressor(random_state=state)
-    model_rf = RandomForestRegressor(random_state=state)
+    model_rf = RandomForestRegressor(random_state=state) 
     model_gb = GradientBoostingRegressor(random_state=state)
 
     CV_idx = [np.array(sub_lst)[s[v]]] # pick random subject to exclude for testing 

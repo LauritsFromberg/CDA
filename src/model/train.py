@@ -13,12 +13,33 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 sys.path.insert(0, 'C:/Users/Bruger/Documents/CDA/CDA/src/data')
 from utils import preprocessing_utils as pre
-from data import *
+
 
 ## train models
 
 # time 
 startTime = time.time()
+
+# load dataset
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/dataset.pkl"
+file = open(filename,"rb")
+dataset = pickle.load(file)
+file.close()
+
+# load questions
+filename = "C:/Users/Bruger/Documents/CDA/CDA/data/quest.pkl"
+file = open(filename,"rb")
+quest = pickle.load(file)
+file.close()
+
+# subjects
+sub_lst = ["S10","S11","S13","S14","S15","S16","S17","S2","S3","S4","S6","S7","S8"] # exclude S9 for final assessment in feature importance
+
+# emotional states (versions of study-protocol)
+cond = ["base","stress","amusement","meditation_1","meditation_2"]
+
+# states
+states = []
 
 # Signals to include
 signals = ["EDA","TEMP","BVP","HR"]
@@ -30,8 +51,8 @@ fs = [4,4,32,1]
 t = 10
 
 # initialise memory
-X_train = np.zeros((65,112)) # number of phases (for 13 subjects) x number of features
-y_train = np.zeros((65,32)) # number of phases (for 13 subjects) x number of questions
+X_train = np.zeros((60,112)) # number of phases (for 12 subjects) x number of features
+y_train = np.zeros((60,32)) # number of phases (for 12 subjects) x number of questions
 X_test = np.zeros((5,112)) # number of phases (for one subject) x number of features
 y_test = np.zeros((5,32)) # number of phases x number of questions
 
@@ -68,6 +89,7 @@ for v in range(n):
 
     # pick random state
     state = np.random.randint(0,100000)
+    states.append(state)
 
      # models
     model_en = linear_model.ElasticNet(tol=0.01,max_iter=10000,selection="random",random_state=state)
@@ -243,7 +265,7 @@ filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_param.pkl"
 pickle.dump(best_param,open(filename ,"wb"))
 
 # save extra information
-extra = ["best method:",best_method,"best model best method:",best_model_best_method,"generalisation errors mse:",gen_err]
+extra = ["best method:",best_method,"best model best method:",best_model_best_method,"generalisation errors mse:",gen_err,"states",states]
 with open("C:/Users/Bruger/Documents/CDA/CDA/models/extra_inf.txt","w") as f:
     for line in extra:
         f.write(f"{line}\n")

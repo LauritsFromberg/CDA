@@ -2,6 +2,8 @@ import numpy as np
 from scipy import signal
 from scipy import stats as stats
 from scipy import integrate as inte
+import pandas as pd
+import antropy as ant
 
 ## functions for pre-processing
 
@@ -101,18 +103,12 @@ def slope_features(X,window_size,window_shift,fs):
     
     return {"max": max(slope), "min": min(slope),"avg": sum(slope)/len(slope)}
 
-
-#slope_feat = slope_features(np.arange(40),5,1,1)
-#print(slope_feat)
-
 def stat_features(X,window_size,window_shift,fs):
     
     # initialise memory
     mean = []
     median = []
     std = []
-    #skewness = []
-    #kurtosis = []
     min_ = []
     max_ = []
     entropy = []
@@ -167,5 +163,3 @@ def extra_features(X,window_size,window_shift,fs):
 
     return {"max avg_gradient": max(avg_gradient),"min avg_gradient": min(avg_gradient), "avg avg_gradient": sum(avg_gradient)/len(avg_gradient),
             "max absolute integral": max(abs_int), "min absolute integral": min(abs_int), "avg absolute integral": sum(abs_int)/len(abs_int)}
-
-

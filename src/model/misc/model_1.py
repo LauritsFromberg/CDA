@@ -2,22 +2,31 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
-import sklearn
-from sklearn import linear_model
-import warnings
-import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
-from matplotlib.cm import cool
 
 ## load data
 
 # define path 
 path = "C:/Users/Bruger/Documents/CDA/CDA/data/open/WESAD"
 
-# empty dictionary
+# empty dictionaries
 dataset = {} 
+HR_dict = {}
+
+# subjects
+sub_lst = ["S10","S11","S13","S14","S15","S16","S17","S2","S3","S4","S6","S7","S8","S9"]
+
+# counter 
+c = -1
+
+# load HR biosignals
+for folder,sub_folders,files in os.walk(path):
+    for name in files:
+        if name.endswith("HR.csv"):
+            c += 1
+            df = pd.read_csv(os.path.join(folder,name),sep=";",skiprows=1)
+            HR_dict[sub_lst[c]] = {"HR": df.values.tolist()}  # load into dictonary
 
 # main for-loop
 for folder,sub_folders,files in os.walk(path):
@@ -28,10 +37,12 @@ for folder,sub_folders,files in os.walk(path):
                 tmp.encoding = "latin1" # encode to appropriate format
                 dict = tmp.load() # load data
                 dict = {"wrist":dict["signal"]["wrist"],"label": dict["label"]} # ignore RespiBAN data
+                dict["wrist"]["HR"] = np.array(HR_dict[str(name).rsplit(".",1)[0]]["HR"]) # add HR
                 dataset[str(name).rsplit(".",1)[0]] = dict # add to nested dictionary
 
 # create data for supervised learning
 BVP = dataset["S4"]["wrist"]["BVP"] 
+HR = dataset["S4"]["wrist"]["HR"]
 EDA = dataset["S4"]["wrist"]["EDA"]
 TEMP = dataset["S4"]["wrist"]["TEMP"]
 y = dataset["S4"]["label"] # labels
@@ -62,43 +73,44 @@ def pltcolour(lst):
     return cols
 
 # initialise plot
-isf = 4 # inverse sampling rate (lowest)
-y = y[::int(700/isf)] # match labels with biosignal
-BVP = BVP[::int(64/isf)] # match BVP 
-s = 6000 # number of seconds
-n = isf*s # number of point specified by the inverse sampling rate
+fs = 1 # lowest (HR)
+y = y[::int(700/fs)] # match labels with biosignal
+BVP = BVP[::int(64/fs)] # match BVP 
+EDA = EDA[::int(4/fs)] # match EDA 
+TEMP = TEMP[::int(4/fs)] # match TEMP
+s = 5000 # number of seconds
+n = fs*s # number of point specified by the inverse sampling rate
 col = pltcolour(y) # colours
-t = np.linspace(0,s,n) # time steps
+t = np.linspace(0,s,n) # time steps 
 
 # plot
-fig, (ax1,ax2,ax3) = plt.subplots(3,1,sharex=True)
+fig, (ax1,ax2,ax3,ax4) = plt.subplots(4,1,sharex=True)
 fig.suptitle("Empatica E4 - Biosignals")
 ax1.scatter(t,EDA[0:n],s=1,c=col[0:n]) 
 ax2.scatter(t,BVP[0:n],s=1,c=col[0:n])
 ax3.scatter(t,TEMP[0:n],s=1,c=col[0:n])
+ax4.scatter(t,HR[0:n],s=1,c=col[0:n])
 ax1.set(ylabel = "EDA [$\mu S$]")
 ax2.set(ylabel = "BVP [N/A]")
-ax3.set(xlabel = "Time [Seconds]", ylabel = "TEMP [$^\circ C$]")                                                                                                                                     
+ax3.set(ylabel = "TEMP [$^\circ C$]")   
+ax4.set(xlabel = "Time [Seconds]", ylabel = "HR [BPM]")                                                                                                                                  
 ax1.grid()
 ax2.grid()
 ax3.grid()
-ax1.legend(handles=legend_elements,loc="upper right")
-ax2.legend(handles=legend_elements,loc="upper right")
-ax3.legend(handles=legend_elements,loc="upper right")
+ax4.grid()
+ax1.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
+ax2.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
+ax3.legend(handles=legend_elements,loc="lower left", prop={'size': 8},ncol=5)
+ax4.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
 plt.show()
 
-# extra
-plt.plot(BVP)
+# extra plot for BVP
+fig, ax  = plt.subplots(1)
+fig.suptitle("Empatica E4 - BVP Biosignal")
+ax.scatter(t,BVP[0:n],s=1,c=col[0:n])
+ax.set(ylabel = "BVP [N/A]")
+ax.set(xlabel = "Time [Seconds]")
+ax.grid()
+ax.legend(handles=legend_elements,loc="upper left", prop={'size': 8},ncol=5)
+ax.set_ylim([-400,400])
 plt.show()
-
-
-
-
-# hyper-parameters
-
-# # model
-# with warnings.catch_warnings(): # disable all convergence warnings from elastic net
-#    warnings.simplefilter("ignore")
-
-#    model = sklearn.linear_model.ElasticNet().fit(X,y) # fit elastic net model
-

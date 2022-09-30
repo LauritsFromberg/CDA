@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 from numpy.linalg import norm
 from sklearn.ensemble import RandomForestRegressor
-from sklearn import metrics
 sys.path.insert(0, 'C:/Users/Bruger/Documents/CDA/CDA/src/data')
 from utils import preprocessing_utils as pre
 
@@ -12,7 +11,7 @@ from utils import preprocessing_utils as pre
 # train best model on all individals 
 
 # load model parameters
-filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_param_8cv.pkl"
+filename = "C:/Users/Bruger/Documents/CDA/CDA/models/best_param_final.pkl"
 file = open(filename,"rb")
 param = pickle.load(file)
 file.close()
@@ -160,4 +159,5 @@ print("mse:",1/5*(norm(y_test[0]-y_pred[0])**2+norm(y_test[1]-y_pred[1])**2+norm
 
 # feature importance    
 features = model.feature_importances_
+print(np.where(features>np.std(features)/(len(features)**0.5)))
 print(features[np.where(features>np.std(features)/(len(features)**0.5))])
